@@ -1,23 +1,62 @@
 <!DOCTYPE html>
 <html lang="lv">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Page Not Found - Cerības ģimenes mājaslapa</title>
-    <script>
-        // Redirect to the custom error page after 3 seconds
-        setTimeout(function() {
-            window.location.href = "https://ceribas3.github.io/error/error404";
-        }, 3000);
-    </script>
+  <meta charset="UTF-8">
+  <title>404 - Lapa nav atrasta</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+    body {
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      background-color: #fefefe;
+      color: #333;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      height: 100vh;
+      flex-direction: column;
+      background: linear-gradient(135deg, #e8f0ff, #f9f9ff);
+    }
+    h1 {
+      font-size: 5rem;
+      color: #ff4d4d;
+    }
+    p {
+      font-size: 1.5rem;
+      margin: 20px 0;
+    }
+    a {
+      text-decoration: none;
+      padding: 12px 24px;
+      background-color: #4CAF50;
+      color: white;
+      border-radius: 8px;
+      transition: background-color 0.3s;
+    }
+    a:hover {
+      background-color: #388E3C;
+    }
+    .footer {
+      position: absolute;
+      bottom: 20px;
+      font-size: 0.9rem;
+      color: #777;
+    }
+  </style>
 </head>
 <body>
-    <header>
-        <h1>Cerības ģimenes mājaslapa</h1>
-    </header>
 
-    <div style="text-align:center; padding:50px;">
-        <p>Atvainojiet, šī lapa nav atrasta. Jūs tiksiet pāradresēts...</p>
-    </div>
+  <h1>404</h1>
+  <p>Atvainojiet, šī lapa nav atrasta 😢</p>
+  <a href="https://ceribas3.github.io">Atgriezties sākumlapā</a>
+
+  <div class="footer">
+    © 2025 Uxidone — Visas autortiesības aizsargātas
+  </div>
+
 </body>
 </html>
