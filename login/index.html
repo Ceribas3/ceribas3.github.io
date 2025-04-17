@@ -4,75 +4,13 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Login</title>
-    <script src="https://www.gstatic.com/firebasejs/11.6.0/firebase-app.js"></script>
-    <script src="https://www.gstatic.com/firebasejs/11.6.0/firebase-auth.js"></script>
-    <script src="https://www.gstatic.com/firebasejs/11.6.0/firebase-analytics.js"></script>
-    <style>
-        body {
-            font-family: Arial, sans-serif;
-            display: flex;
-            flex-direction: column;
-            justify-content: center;
-            align-items: center;
-            height: 100vh;
-            margin: 0;
-        }
 
-        h1 {
-            font-size: 2em;
-            margin-bottom: 20px;
-        }
+    <!-- Firebase SDK Script -->
+    <script type="module">
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/11.6.0/firebase-app.js";
+        import { getAuth, signInWithEmailAndPassword, GoogleAuthProvider, signInWithPopup, RecaptchaVerifier, signInWithPhoneNumber } from "https://www.gstatic.com/firebasejs/11.6.0/firebase-auth.js";
+        import { getAnalytics } from "https://www.gstatic.com/firebasejs/11.6.0/firebase-analytics.js";
 
-        input {
-            margin: 10px 0;
-            padding: 10px;
-            width: 200px;
-        }
-
-        button {
-            padding: 10px;
-            width: 220px;
-            margin: 10px 0;
-        }
-
-        #phoneNumberDiv {
-            display: none;
-            text-align: center;
-        }
-    </style>
-</head>
-<body>
-
-    <h1>Login</h1>
-
-    <!-- Email/Password Login Form -->
-    <div id="emailLoginDiv">
-        <form id="loginForm">
-            <input type="email" id="email" placeholder="Enter your email" required><br>
-            <input type="password" id="password" placeholder="Enter your password" required><br>
-            <button type="submit">Login with Email</button>
-        </form>
-    </div>
-
-    <h3>Or</h3>
-
-    <!-- Google Login -->
-    <button id="googleLogin">Login with Google</button>
-
-    <h3>Or</h3>
-
-    <!-- Phone Login -->
-    <button id="phoneLogin">Login with Phone Number</button>
-
-    <div id="phoneNumberDiv">
-        <input type="text" id="phoneNumber" placeholder="Enter phone number (e.g., +11234567890)" required><br>
-        <button id="sendVerification">Send Verification Code</button>
-        <input type="text" id="verificationCode" placeholder="Enter verification code" required><br>
-        <button id="verifyCode">Verify Code</button>
-    </div>
-
-    <script>
-        // Firebase configuration
         const firebaseConfig = {
             apiKey: "AIzaSyD5L93RbgyI2voaite89sy87Mp3KwHqBEQ",
             authDomain: "ceribas3-saite.firebaseapp.com",
@@ -83,27 +21,21 @@
             measurementId: "G-2204JGLHCM"
         };
 
-        // Initialize Firebase
-        const app = firebase.initializeApp(firebaseConfig);
-        const auth = firebase.auth();
+        const app = initializeApp(firebaseConfig);
+        const auth = getAuth(app);
+        const analytics = getAnalytics(app);
 
-        // Debugging: Log if Firebase is initialized correctly
-        console.log("Firebase Initialized");
-
-        // Email/Password Login
         const loginForm = document.getElementById('loginForm');
         loginForm.addEventListener('submit', function(e) {
             e.preventDefault();
             const email = document.getElementById('email').value;
             const password = document.getElementById('password').value;
-            console.log("Attempting Email Login");
-
-            auth.signInWithEmailAndPassword(email, password)
+            
+            signInWithEmailAndPassword(auth, email, password)
                 .then((userCredential) => {
                     const user = userCredential.user;
-                    console.log('Logged in:', user);
                     alert('Login successful!');
-                    window.location.href = "https://ceribas3.github.io/"; // Redirect to homepage
+                    window.location.href = "https://ceribas3.github.io/";
                 })
                 .catch((error) => {
                     console.error('Error:', error.message);
@@ -111,44 +43,36 @@
                 });
         });
 
-        // Google Login
         const googleLoginButton = document.getElementById('googleLogin');
         googleLoginButton.addEventListener('click', () => {
-            console.log("Attempting Google Login");
-            const provider = new firebase.auth.GoogleAuthProvider();
-            auth.signInWithPopup(provider)
+            const provider = new GoogleAuthProvider();
+            signInWithPopup(auth, provider)
                 .then((result) => {
                     const user = result.user;
-                    console.log('Google login successful:', user);
-                    alert('Login with Google successful!');
-                    window.location.href = "https://ceribas3.github.io/"; // Redirect to homepage
+                    alert('Google login successful!');
+                    window.location.href = "https://ceribas3.github.io/";
                 })
                 .catch((error) => {
-                    console.error('Google login error:', error.message);
                     alert('Google login failed: ' + error.message);
                 });
         });
 
-        // Phone Login
         const phoneLoginButton = document.getElementById('phoneLogin');
         phoneLoginButton.addEventListener('click', () => {
-            console.log("Phone Login button clicked");
             document.getElementById('phoneNumberDiv').style.display = 'block';
         });
 
         const sendVerificationButton = document.getElementById('sendVerification');
         sendVerificationButton.addEventListener('click', () => {
             const phoneNumber = document.getElementById('phoneNumber').value;
-            console.log("Sending phone number verification: ", phoneNumber);
-
-            const recaptchaVerifier = new firebase.auth.RecaptchaVerifier('sendVerification', {
+            const recaptchaVerifier = new RecaptchaVerifier('sendVerification', {
                 size: 'invisible',
                 callback: (response) => {
                     console.log('Recaptcha verified:', response);
                 }
             }, auth);
 
-            auth.signInWithPhoneNumber(phoneNumber, recaptchaVerifier)
+            signInWithPhoneNumber(auth, phoneNumber, recaptchaVerifier)
                 .then((confirmationResult) => {
                     window.confirmationResult = confirmationResult;
                     alert('SMS sent! Please enter the verification code.');
@@ -162,20 +86,124 @@
         const verifyCodeButton = document.getElementById('verifyCode');
         verifyCodeButton.addEventListener('click', () => {
             const verificationCode = document.getElementById('verificationCode').value;
-            console.log("Verifying phone code: ", verificationCode);
-
             window.confirmationResult.confirm(verificationCode)
                 .then((result) => {
                     const user = result.user;
-                    console.log('Phone number verified:', user);
                     alert('Phone number login successful!');
-                    window.location.href = "https://ceribas3.github.io/"; // Redirect to homepage
+                    window.location.href = "https://ceribas3.github.io/";
                 })
                 .catch((error) => {
-                    console.error('Error verifying code:', error);
                     alert('Error: ' + error.message);
                 });
         });
     </script>
+
+    <style>
+        /* General body styles */
+        body {
+            font-family: 'Arial', sans-serif;
+            margin: 0;
+            padding: 0;
+            background-color: #f4f7fc;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+        }
+
+        /* Main container for the login form */
+        .login-container {
+            background-color: white;
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            width: 350px;
+            text-align: center;
+        }
+
+        .login-container h1 {
+            color: #333;
+            margin-bottom: 20px;
+        }
+
+        /* Input fields */
+        input[type="email"], input[type="password"], input[type="text"] {
+            width: 100%;
+            padding: 10px;
+            margin-bottom: 15px;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+            font-size: 14px;
+        }
+
+        button {
+            width: 100%;
+            padding: 10px;
+            background-color: #4CAF50;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            font-size: 16px;
+            cursor: pointer;
+            margin-bottom: 10px;
+        }
+
+        button:hover {
+            background-color: #45a049;
+        }
+
+        /* Links and additional styles */
+        .or {
+            margin: 10px 0;
+            font-size: 14px;
+        }
+
+        #phoneNumberDiv {
+            display: none;
+        }
+
+        /* Social buttons */
+        .social-buttons button {
+            background-color: #db4437;
+            color: white;
+            margin: 5px 0;
+        }
+
+        .social-buttons button:hover {
+            background-color: #c1351d;
+        }
+    </style>
+</head>
+<body>
+
+    <div class="login-container">
+        <h1>Login</h1>
+
+        <!-- Email/Password Login Form -->
+        <form id="loginForm">
+            <input type="email" id="email" placeholder="Enter your email" required><br>
+            <input type="password" id="password" placeholder="Enter your password" required><br>
+            <button type="submit">Login with Email</button>
+        </form>
+
+        <!-- Or section -->
+        <div class="or">Or</div>
+
+        <!-- Google Login -->
+        <button id="googleLogin" class="social-buttons">Login with Google</button>
+
+        <div class="or">Or</div>
+
+        <!-- Phone Login -->
+        <button id="phoneLogin">Login with Phone Number</button>
+
+        <div id="phoneNumberDiv">
+            <input type="text" id="phoneNumber" placeholder="Enter phone number (e.g., +11234567890)" required><br>
+            <button id="sendVerification">Send Verification Code</button>
+            <input type="text" id="verificationCode" placeholder="Enter verification code" required><br>
+            <button id="verifyCode">Verify Code</button>
+        </div>
+    </div>
+
 </body>
 </html>
