@@ -4,16 +4,169 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Login</title>
-    <script type="module" src="login.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/11.6.0/firebase-app.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/11.6.0/firebase-auth.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/11.6.0/firebase-analytics.js"></script>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            margin: 0;
+        }
+
+        h1 {
+            font-size: 2em;
+            margin-bottom: 20px;
+        }
+
+        input {
+            margin: 10px 0;
+            padding: 10px;
+            width: 200px;
+        }
+
+        button {
+            padding: 10px;
+            width: 220px;
+            margin: 10px 0;
+        }
+
+        #phoneNumberDiv {
+            display: none;
+            text-align: center;
+        }
+    </style>
 </head>
 <body>
+
     <h1>Login</h1>
-    <form id="loginForm">
-        <label for="email">Email: </label>
-        <input type="email" id="email" required><br><br>
-        <label for="password">Password: </label>
-        <input type="password" id="password" required><br><br>
-        <button type="submit">Login</button>
-    </form>
+
+    <!-- Email/Password Login Form -->
+    <div id="emailLoginDiv">
+        <form id="loginForm">
+            <input type="email" id="email" placeholder="Enter your email" required><br>
+            <input type="password" id="password" placeholder="Enter your password" required><br>
+            <button type="submit">Login with Email</button>
+        </form>
+    </div>
+
+    <h3>Or</h3>
+
+    <!-- Google Login -->
+    <button id="googleLogin">Login with Google</button>
+
+    <h3>Or</h3>
+
+    <!-- Phone Login -->
+    <button id="phoneLogin">Login with Phone Number</button>
+
+    <div id="phoneNumberDiv">
+        <input type="text" id="phoneNumber" placeholder="Enter phone number (e.g., +11234567890)" required><br>
+        <button id="sendVerification">Send Verification Code</button>
+        <input type="text" id="verificationCode" placeholder="Enter verification code" required><br>
+        <button id="verifyCode">Verify Code</button>
+    </div>
+
+    <script>
+        // Firebase configuration
+        const firebaseConfig = {
+            apiKey: "AIzaSyD5L93RbgyI2voaite89sy87Mp3KwHqBEQ",
+            authDomain: "ceribas3-saite.firebaseapp.com",
+            projectId: "ceribas3-saite",
+            storageBucket: "ceribas3-saite.firebasestorage.app",
+            messagingSenderId: "728919586798",
+            appId: "1:728919586798:web:92265e806f32b885f780ff",
+            measurementId: "G-2204JGLHCM"
+        };
+
+        // Initialize Firebase
+        const app = firebase.initializeApp(firebaseConfig);
+        const auth = firebase.auth();
+
+        // Email/Password Login
+        const loginForm = document.getElementById('loginForm');
+        loginForm.addEventListener('submit', function(e) {
+            e.preventDefault();
+            const email = document.getElementById('email').value;
+            const password = document.getElementById('password').value;
+
+            auth.signInWithEmailAndPassword(email, password)
+                .then((userCredential) => {
+                    const user = userCredential.user;
+                    console.log('Logged in:', user);
+                    alert('Login successful!');
+                    window.location.href = "https://ceribas3.github.io/"; // Redirect to homepage
+                })
+                .catch((error) => {
+                    console.error('Error:', error.message);
+                    alert('Login failed: ' + error.message);
+                });
+        });
+
+        // Google Login
+        const googleLoginButton = document.getElementById('googleLogin');
+        googleLoginButton.addEventListener('click', () => {
+            const provider = new firebase.auth.GoogleAuthProvider();
+            auth.signInWithPopup(provider)
+                .then((result) => {
+                    const user = result.user;
+                    console.log('Google login successful:', user);
+                    alert('Login with Google successful!');
+                    window.location.href = "https://ceribas3.github.io/"; // Redirect to homepage
+                })
+                .catch((error) => {
+                    console.error('Google login error:', error.message);
+                    alert('Google login failed: ' + error.message);
+                });
+        });
+
+        // Phone Login
+        const phoneLoginButton = document.getElementById('phoneLogin');
+        phoneLoginButton.addEventListener('click', () => {
+            document.getElementById('phoneNumberDiv').style.display = 'block';
+        });
+
+        const sendVerificationButton = document.getElementById('sendVerification');
+        sendVerificationButton.addEventListener('click', () => {
+            const phoneNumber = document.getElementById('phoneNumber').value;
+
+            const recaptchaVerifier = new firebase.auth.RecaptchaVerifier('sendVerification', {
+                size: 'invisible',
+                callback: (response) => {
+                    console.log('Recaptcha verified:', response);
+                }
+            }, auth);
+
+            auth.signInWithPhoneNumber(phoneNumber, recaptchaVerifier)
+                .then((confirmationResult) => {
+                    window.confirmationResult = confirmationResult;
+                    alert('SMS sent! Please enter the verification code.');
+                })
+                .catch((error) => {
+                    console.error('Error sending SMS:', error);
+                    alert('Error: ' + error.message);
+                });
+        });
+
+        const verifyCodeButton = document.getElementById('verifyCode');
+        verifyCodeButton.addEventListener('click', () => {
+            const verificationCode = document.getElementById('verificationCode').value;
+            window.confirmationResult.confirm(verificationCode)
+                .then((result) => {
+                    const user = result.user;
+                    console.log('Phone number verified:', user);
+                    alert('Phone number login successful!');
+                    window.location.href = "https://ceribas3.github.io/"; // Redirect to homepage
+                })
+                .catch((error) => {
+                    console.error('Error verifying code:', error);
+                    alert('Error: ' + error.message);
+                });
+        });
+    </script>
 </body>
 </html>
