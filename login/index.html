@@ -1,209 +1,165 @@
 <!DOCTYPE html>
 <html lang="lv">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Login</title>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Cerības3 - Pieslēgties</title>
+  <style>
+    body {
+      margin: 0;
+      padding: 0;
+      font-family: "Segoe UI", sans-serif;
+      background: linear-gradient(to right, #5a78ff, #86c8ff);
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      height: 100vh;
+    }
 
-    <!-- Firebase SDK Script -->
-    <script type="module">
-        import { initializeApp } from "https://www.gstatic.com/firebasejs/11.6.0/firebase-app.js";
-        import { getAuth, signInWithEmailAndPassword, GoogleAuthProvider, signInWithPopup, RecaptchaVerifier, signInWithPhoneNumber } from "https://www.gstatic.com/firebasejs/11.6.0/firebase-auth.js";
-        import { getAnalytics } from "https://www.gstatic.com/firebasejs/11.6.0/firebase-analytics.js";
+    .login-box {
+      background-color: #fff;
+      padding: 40px;
+      border-radius: 12px;
+      box-shadow: 0 8px 24px rgba(0, 0, 0, 0.2);
+      text-align: center;
+      width: 100%;
+      max-width: 400px;
+    }
 
-        const firebaseConfig = {
-            apiKey: "AIzaSyD5L93RbgyI2voaite89sy87Mp3KwHqBEQ",
-            authDomain: "ceribas3-saite.firebaseapp.com",
-            projectId: "ceribas3-saite",
-            storageBucket: "ceribas3-saite.firebasestorage.app",
-            messagingSenderId: "728919586798",
-            appId: "1:728919586798:web:92265e806f32b885f780ff",
-            measurementId: "G-2204JGLHCM"
-        };
+    h2 {
+      margin-bottom: 20px;
+      color: #333;
+    }
 
-        const app = initializeApp(firebaseConfig);
-        const auth = getAuth(app);
-        const analytics = getAnalytics(app);
+    input[type="email"], input[type="password"], input[type="tel"] {
+      width: 100%;
+      padding: 12px;
+      margin: 10px 0;
+      border: 1px solid #ccc;
+      border-radius: 8px;
+    }
 
-        const loginForm = document.getElementById('loginForm');
-        loginForm.addEventListener('submit', function(e) {
-            e.preventDefault();
-            const email = document.getElementById('email').value;
-            const password = document.getElementById('password').value;
-            
-            signInWithEmailAndPassword(auth, email, password)
-                .then((userCredential) => {
-                    const user = userCredential.user;
-                    alert('Login successful!');
-                    window.location.href = "https://ceribas3.github.io/";
-                })
-                .catch((error) => {
-                    console.error('Error:', error.message);
-                    alert('Login failed: ' + error.message);
-                });
-        });
+    button {
+      padding: 12px 24px;
+      margin-top: 15px;
+      width: 100%;
+      background-color: #5a78ff;
+      color: white;
+      border: none;
+      border-radius: 8px;
+      font-size: 16px;
+      cursor: pointer;
+      transition: 0.3s;
+    }
 
-        const googleLoginButton = document.getElementById('googleLogin');
-        googleLoginButton.addEventListener('click', () => {
-            const provider = new GoogleAuthProvider();
-            signInWithPopup(auth, provider)
-                .then((result) => {
-                    const user = result.user;
-                    alert('Google login successful!');
-                    window.location.href = "https://ceribas3.github.io/";
-                })
-                .catch((error) => {
-                    alert('Google login failed: ' + error.message);
-                });
-        });
+    button:hover {
+      background-color: #3b5edc;
+    }
 
-        const phoneLoginButton = document.getElementById('phoneLogin');
-        phoneLoginButton.addEventListener('click', () => {
-            document.getElementById('phoneNumberDiv').style.display = 'block';
-        });
+    .divider {
+      margin: 20px 0;
+      color: #aaa;
+    }
 
-        const sendVerificationButton = document.getElementById('sendVerification');
-        sendVerificationButton.addEventListener('click', () => {
-            const phoneNumber = document.getElementById('phoneNumber').value;
-            const recaptchaVerifier = new RecaptchaVerifier('sendVerification', {
-                size: 'invisible',
-                callback: (response) => {
-                    console.log('Recaptcha verified:', response);
-                }
-            }, auth);
+    .alt-login button {
+      background-color: #fff;
+      border: 1px solid #ccc;
+      color: #333;
+    }
 
-            signInWithPhoneNumber(auth, phoneNumber, recaptchaVerifier)
-                .then((confirmationResult) => {
-                    window.confirmationResult = confirmationResult;
-                    alert('SMS sent! Please enter the verification code.');
-                })
-                .catch((error) => {
-                    console.error('Error sending SMS:', error);
-                    alert('Error: ' + error.message);
-                });
-        });
+    #recaptcha-container {
+      margin-top: 10px;
+    }
 
-        const verifyCodeButton = document.getElementById('verifyCode');
-        verifyCodeButton.addEventListener('click', () => {
-            const verificationCode = document.getElementById('verificationCode').value;
-            window.confirmationResult.confirm(verificationCode)
-                .then((result) => {
-                    const user = result.user;
-                    alert('Phone number login successful!');
-                    window.location.href = "https://ceribas3.github.io/";
-                })
-                .catch((error) => {
-                    alert('Error: ' + error.message);
-                });
-        });
-    </script>
-
-    <style>
-        /* General body styles */
-        body {
-            font-family: 'Arial', sans-serif;
-            margin: 0;
-            padding: 0;
-            background-color: #f4f7fc;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            height: 100vh;
-        }
-
-        /* Main container for the login form */
-        .login-container {
-            background-color: white;
-            padding: 20px;
-            border-radius: 10px;
-            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
-            width: 350px;
-            text-align: center;
-        }
-
-        .login-container h1 {
-            color: #333;
-            margin-bottom: 20px;
-        }
-
-        /* Input fields */
-        input[type="email"], input[type="password"], input[type="text"] {
-            width: 100%;
-            padding: 10px;
-            margin-bottom: 15px;
-            border: 1px solid #ddd;
-            border-radius: 5px;
-            font-size: 14px;
-        }
-
-        button {
-            width: 100%;
-            padding: 10px;
-            background-color: #4CAF50;
-            color: white;
-            border: none;
-            border-radius: 5px;
-            font-size: 16px;
-            cursor: pointer;
-            margin-bottom: 10px;
-        }
-
-        button:hover {
-            background-color: #45a049;
-        }
-
-        /* Links and additional styles */
-        .or {
-            margin: 10px 0;
-            font-size: 14px;
-        }
-
-        #phoneNumberDiv {
-            display: none;
-        }
-
-        /* Social buttons */
-        .social-buttons button {
-            background-color: #db4437;
-            color: white;
-            margin: 5px 0;
-        }
-
-        .social-buttons button:hover {
-            background-color: #c1351d;
-        }
-    </style>
+    .error {
+      color: red;
+      margin-top: 10px;
+    }
+  </style>
 </head>
 <body>
 
-    <div class="login-container">
-        <h1>Login</h1>
+  <div class="login-box">
+    <h2>Pieslēgties Cerības3</h2>
 
-        <!-- Email/Password Login Form -->
-        <form id="loginForm">
-            <input type="email" id="email" placeholder="Enter your email" required><br>
-            <input type="password" id="password" placeholder="Enter your password" required><br>
-            <button type="submit">Login with Email</button>
-        </form>
+    <input type="email" id="email" placeholder="E-pasts" />
+    <input type="password" id="password" placeholder="Parole" />
+    <button onclick="loginWithEmail()">Pieslēgties</button>
 
-        <!-- Or section -->
-        <div class="or">Or</div>
+    <div class="divider">vai</div>
 
-        <!-- Google Login -->
-        <button id="googleLogin" class="social-buttons">Login with Google</button>
-
-        <div class="or">Or</div>
-
-        <!-- Phone Login -->
-        <button id="phoneLogin">Login with Phone Number</button>
-
-        <div id="phoneNumberDiv">
-            <input type="text" id="phoneNumber" placeholder="Enter phone number (e.g., +11234567890)" required><br>
-            <button id="sendVerification">Send Verification Code</button>
-            <input type="text" id="verificationCode" placeholder="Enter verification code" required><br>
-            <button id="verifyCode">Verify Code</button>
-        </div>
+    <div class="alt-login">
+      <button onclick="loginWithGoogle()">Pieslēgties ar Google</button>
+      <input type="tel" id="phone" placeholder="+37112345678" />
+      <div id="recaptcha-container"></div>
+      <button onclick="sendCode()">Sūtīt kodu</button>
+      <input type="text" id="code" placeholder="Verifikācijas kods" />
+      <button onclick="verifyCode()">Apstiprināt kodu</button>
     </div>
 
+    <p class="error" id="error-msg"></p>
+  </div>
+
+  <!-- Firebase SDKs -->
+  <script src="https://www.gstatic.com/firebasejs/11.6.0/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/11.6.0/firebase-auth-compat.js"></script>
+
+  <script>
+    // Firebase config
+    const firebaseConfig = {
+      apiKey: "AIzaSyD5L93RbgyI2voaite89sy87Mp3KwHqBEQ",
+    authDomain: "ceribas3-saite.firebaseapp.com",
+    projectId: "ceribas3-saite",
+    storageBucket: "ceribas3-saite.firebasestorage.app",
+    messagingSenderId: "728919586798",
+    appId: "1:728919586798:web:92265e806f32b885f780ff",
+    measurementId: "G-2204JGLHCM"
+    };
+
+    firebase.initializeApp(firebaseConfig);
+
+    const auth = firebase.auth();
+    const errorMsg = document.getElementById("error-msg");
+
+    function loginWithEmail() {
+      const email = document.getElementById("email").value;
+      const password = document.getElementById("password").value;
+
+      auth.signInWithEmailAndPassword(email, password)
+        .then(() => window.location.href = "/")
+        .catch((err) => errorMsg.innerText = err.message);
+    }
+
+    function loginWithGoogle() {
+      const provider = new firebase.auth.GoogleAuthProvider();
+      auth.signInWithPopup(provider)
+        .then(() => window.location.href = "/")
+        .catch((err) => errorMsg.innerText = err.message);
+    }
+
+    // Phone login
+    window.recaptchaVerifier = new firebase.auth.RecaptchaVerifier('recaptcha-container', {
+      'size': 'normal',
+      'callback': (response) => {}
+    });
+
+    let confirmationResult;
+
+    function sendCode() {
+      const phone = document.getElementById("phone").value;
+      auth.signInWithPhoneNumber(phone, window.recaptchaVerifier)
+        .then((result) => {
+          confirmationResult = result;
+        })
+        .catch((err) => errorMsg.innerText = err.message);
+    }
+
+    function verifyCode() {
+      const code = document.getElementById("code").value;
+      confirmationResult.confirm(code)
+        .then(() => window.location.href = "/")
+        .catch((err) => errorMsg.innerText = err.message);
+    }
+  </script>
 </body>
 </html>
