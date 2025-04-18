@@ -1,0 +1,80 @@
+<!DOCTYPE html>
+<html lang="lv">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Cerības3 – Pieslēgties</title>
+  <script src="https://www.gstatic.com/firebasejs/10.11.0/firebase-app.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/10.11.0/firebase-auth.js"></script>
+  <style>
+    /* Your existing CSS code here */
+  </style>
+</head>
+<body>
+  <div class="auth-box">
+    <h1>Pieslēgties Cerības3</h1>
+    <p>Ievadi savus datus, lai pieslēgtos:</p>
+    <form id="login-form">
+      <input type="email" id="email" placeholder="E-pasts" required />
+      <input type="password" id="password" placeholder="Parole" required />
+      <button type="submit">Pieslēgties</button>
+    </form>
+    <div class="links">
+      <p><a href="/auth/registreties">Nav konta? Reģistrējies šeit!</a></p>
+      <p><a href="#" onclick="signInWithGoogle()">Pieslēgties ar Google</a></p>
+      <p><a href="#">Pieslēgties ar telefonu</a></p>
+    </div>
+  </div>
+  <footer>© 2025 Cerības3 – Visas tiesības aizsargātas</footer>
+
+  <script>
+    // Your Firebase Configuration
+    const firebaseConfig = {
+      apiKey: "AIzaSyD5L93RbgyI2voaite89sy87Mp3KwHqBEQ",
+      authDomain: "ceribas3-saite.firebaseapp.com",
+      projectId: "ceribas3-saite",
+      storageBucket: "ceribas3-saite.appspot.com",
+      messagingSenderId: "728919586798",
+      appId: "1:728919586798:web:92265e806f32b885f780ff",
+      measurementId: "G-2204JGLHCM"
+    };
+
+    // Initialize Firebase
+    firebase.initializeApp(firebaseConfig);
+    const auth = firebase.auth();
+
+    // Login functionality
+    const loginForm = document.getElementById("login-form");
+    loginForm.addEventListener("submit", function (event) {
+      event.preventDefault();
+
+      const email = document.getElementById("email").value;
+      const password = document.getElementById("password").value;
+
+      // Firebase sign-in with email and password
+      auth.signInWithEmailAndPassword(email, password)
+        .then((userCredential) => {
+          // Successful login, redirect to the home page
+          window.location.href = "/home";  // Change this to your home page URL
+        })
+        .catch((error) => {
+          // Handle errors (e.g., wrong credentials)
+          alert("Kļūda: " + error.message);
+        });
+    });
+
+    // Google Sign-In functionality
+    function signInWithGoogle() {
+      const provider = new firebase.auth.GoogleAuthProvider();
+      auth.signInWithPopup(provider)
+        .then((result) => {
+          // Redirect to home page after successful login
+          window.location.href = "/home";  // Change this to your home page URL
+        })
+        .catch((error) => {
+          alert("Kļūda ar Google pieslēgšanos: " + error.message);
+        });
+    }
+  </script>
+</body>
+</html>
