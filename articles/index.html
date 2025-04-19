@@ -115,9 +115,19 @@
 
   <main id="create-view" class="hidden">
     <h2>Izveidot jaunu rakstu</h2>
+    <input type="text" id="new-author" placeholder="Tavs vārds (autors)">
     <input type="text" id="new-title" placeholder="Raksta nosaukums">
     <textarea id="new-content" rows="6" placeholder="Raksta saturs..."></textarea>
     <button class="button" onclick="saveArticle()">Saglabāt rakstu</button>
+    <a class="back" href="/articles">← Atcelt</a>
+  </main>
+
+  <main id="edit-view" class="hidden">
+    <h2>Rediģēt rakstu</h2>
+    <input type="text" id="edit-title" placeholder="Raksta nosaukums">
+    <input type="text" id="edit-author" placeholder="Autora vārds">
+    <textarea id="edit-content" rows="6" placeholder="Raksta saturs..."></textarea>
+    <button class="button" onclick="saveEditedArticle()">💾 Saglabāt izmaiņas</button>
     <a class="back" href="/articles">← Atcelt</a>
   </main>
 
@@ -131,19 +141,23 @@
     const mainView = document.getElementById("main-view");
     const articleView = document.getElementById("article-view");
     const createView = document.getElementById("create-view");
+    const editView = document.getElementById("edit-view");
     const articles = JSON.parse(localStorage.getItem("articles") || "{}");
 
     function saveArticle() {
+      const author = document.getElementById("new-author").value.trim();
       const title = document.getElementById("new-title").value.trim();
       const content = document.getElementById("new-content").value.trim();
       const id = title.toLowerCase().replace(/\s+/g, "-");
 
-      if (!title || !content) {
+      if (!author || !title || !content) {
         alert("Lūdzu aizpildiet visus laukus.");
         return;
       }
 
-      articles[id] = { title, content };
+      const date = new Date().toLocaleDateString("lv-LV");
+
+      articles[id] = { author, title, content, dateCreated: date };
       localStorage.setItem("articles", JSON.stringify(articles));
       window.location.href = `/articles?p=${id}`;
     }
@@ -154,7 +168,7 @@
       for (const id in articles) {
         const a = document.createElement("a");
         a.href = `/articles?p=${id}`;
-        a.textContent = articles[id].title;
+        a.innerHTML = `<strong>${articles[id].title}</strong><br><small>👤 ${articles[id].author} | 📅 ${articles[id].dateCreated}</small>`;
         list.appendChild(a);
       }
     }
@@ -170,8 +184,48 @@
         return;
       }
 
-      document.getElementById("article-title").textContent = article.title;
+      document.getElementById("article-title").innerHTML = `
+        ${article.title}
+        <br><small style="font-size:0.9rem;color:gray;">Autors: ${article.author} | Izveidots: ${article.dateCreated}</small>
+      `;
       document.getElementById("article-content").textContent = article.content;
+      const editButton = document.createElement("button");
+      editButton.classList.add("button");
+      editButton.textContent = "✏️ Rediģēt";
+      editButton.onclick = () => editArticle(id);
+      document.getElementById("article-view").appendChild(editButton);
+    }
+
+    function editArticle(id) {
+      const article = articles[id];
+      if (!article) return;
+
+      document.getElementById("edit-title").value = article.title;
+      document.getElementById("edit-author").value = article.author;
+      document.getElementById("edit-content").value = article.content;
+
+      articleView.classList.add("hidden");
+      editView.classList.remove("hidden");
+    }
+
+    function saveEditedArticle() {
+      const id = params.get("p");
+
+      const newTitle = document.getElementById("edit-title").value.trim();
+      const newAuthor = document.getElementById("edit-author").value.trim();
+      const newContent = document.getElementById("edit-content").value.trim();
+
+      if (!newTitle || !newAuthor || !newContent) {
+        alert("Lūdzu aizpildiet visus laukus.");
+        return;
+      }
+
+      articles[id].title = newTitle;
+      articles[id].author = newAuthor;
+      articles[id].content = newContent;
+
+      localStorage.setItem("articles", JSON.stringify(articles));
+      window.location.href = `/articles?p=${id}`;
     }
 
     if (!view) {
