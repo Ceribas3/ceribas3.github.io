@@ -3,56 +3,143 @@
 <head>
   <meta charset="UTF-8">
   <title>Raksti – Ceribas3</title>
+  <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;600&display=swap" rel="stylesheet">
   <style>
-    body { font-family: sans-serif; padding: 20px; background: #f4f4f4; }
-    h1 { color: #ff7b00; }
-    .article-list a, .back { display: block; padding: 10px; margin: 10px 0; background: #fff; border: 1px solid #ddd; border-radius: 5px; text-decoration: none; color: #333; }
-    textarea, input { width: 100%; padding: 10px; margin: 10px 0; }
-    button { padding: 10px 20px; background: #ff7b00; border: none; color: white; border-radius: 5px; cursor: pointer; }
-    .hidden { display: none; }
+    :root {
+      --main-color: #FF7B00;
+      --bg-color: #FFFDF9;
+      --card-bg: #FFFFFF;
+      --text-color: #222;
+      --light-gray: #aaa;
+    }
+
+    body {
+      font-family: 'Montserrat', sans-serif;
+      margin: 0;
+      padding: 0;
+      background-color: var(--bg-color);
+      color: var(--text-color);
+    }
+
+    header {
+      background-color: var(--main-color);
+      padding: 20px;
+      color: white;
+      text-align: center;
+      box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+    }
+
+    h1 {
+      margin: 0;
+      font-size: 2rem;
+    }
+
+    main {
+      max-width: 800px;
+      margin: 40px auto;
+      padding: 0 20px;
+    }
+
+    .button, .back {
+      display: inline-block;
+      padding: 12px 20px;
+      margin: 10px 0;
+      background-color: var(--main-color);
+      color: white;
+      border: none;
+      border-radius: 8px;
+      text-decoration: none;
+      font-weight: bold;
+      transition: background-color 0.3s;
+    }
+
+    .button:hover, .back:hover {
+      background-color: #e56f00;
+    }
+
+    .article-list a {
+      display: block;
+      background-color: var(--card-bg);
+      padding: 15px 20px;
+      margin: 15px 0;
+      border-radius: 10px;
+      text-decoration: none;
+      color: var(--text-color);
+      box-shadow: 0 2px 8px rgba(0,0,0,0.05);
+      transition: transform 0.2s;
+    }
+
+    .article-list a:hover {
+      transform: translateY(-2px);
+    }
+
+    input, textarea {
+      width: 100%;
+      padding: 12px;
+      margin: 10px 0 20px 0;
+      border: 1px solid #ccc;
+      border-radius: 8px;
+      font-size: 1rem;
+      font-family: inherit;
+    }
+
+    .hidden {
+      display: none;
+    }
+
+    footer {
+      text-align: center;
+      color: var(--light-gray);
+      font-size: 0.9rem;
+      margin: 60px 0 20px;
+    }
   </style>
 </head>
 <body>
 
-  <div id="main-view">
+  <header>
     <h1>Raksti</h1>
-    <a href="/articles?p=create">+ Izveidot jaunu rakstu</a>
-    <div id="article-list"></div>
-  </div>
+    <p>Lasiet un izveidojiet savus rakstus vietnē <strong>Ceribas3</strong></p>
+  </header>
 
-  <div id="article-view" class="hidden">
-    <h1 id="article-title"></h1>
+  <main id="main-view">
+    <a class="button" href="/articles?p=create">+ Izveidot jaunu rakstu</a>
+    <div class="article-list" id="article-list"></div>
+  </main>
+
+  <main id="article-view" class="hidden">
+    <h2 id="article-title"></h2>
     <p id="article-content"></p>
-    <a class="back" href="/articles">← Atpakaļ uz rakstiem</a>
-  </div>
+    <a class="back" href="/articles">← Atpakaļ uz sarakstu</a>
+  </main>
 
-  <div id="create-view" class="hidden">
-    <h1>Izveidot rakstu</h1>
+  <main id="create-view" class="hidden">
+    <h2>Izveidot jaunu rakstu</h2>
     <input type="text" id="new-title" placeholder="Raksta nosaukums">
     <textarea id="new-content" rows="6" placeholder="Raksta saturs..."></textarea>
-    <button onclick="saveArticle()">Saglabāt</button>
+    <button class="button" onclick="saveArticle()">Saglabāt rakstu</button>
     <a class="back" href="/articles">← Atcelt</a>
-  </div>
+  </main>
+
+  <footer>
+    © 2025 Ceribas3 – Visas tiesības aizsargātas
+  </footer>
 
   <script>
     const params = new URLSearchParams(window.location.search);
     const view = params.get("p");
-    const main = document.getElementById("main-view");
-    const viewArticle = document.getElementById("article-view");
+    const mainView = document.getElementById("main-view");
+    const articleView = document.getElementById("article-view");
     const createView = document.getElementById("create-view");
-
     const articles = JSON.parse(localStorage.getItem("articles") || "{}");
 
     function saveArticle() {
-      const titleInput = document.getElementById("new-title");
-      const contentInput = document.getElementById("new-content");
-
-      const title = titleInput.value.trim();
-      const content = contentInput.value.trim();
+      const title = document.getElementById("new-title").value.trim();
+      const content = document.getElementById("new-content").value.trim();
       const id = title.toLowerCase().replace(/\s+/g, "-");
 
       if (!title || !content) {
-        alert("Lūdzu, aizpildi visus laukus!");
+        alert("Lūdzu aizpildiet visus laukus.");
         return;
       }
 
@@ -62,22 +149,27 @@
     }
 
     function renderList() {
-      const container = document.getElementById("article-list");
-      container.innerHTML = "";
+      const list = document.getElementById("article-list");
+      list.innerHTML = "";
       for (const id in articles) {
         const a = document.createElement("a");
         a.href = `/articles?p=${id}`;
         a.textContent = articles[id].title;
-        container.appendChild(a);
+        list.appendChild(a);
       }
     }
 
     function renderArticle(id) {
       const article = articles[id];
       if (!article) {
-        document.body.innerHTML = "<h1>Raksts nav atrasts</h1><a class='back' href='/articles'>← Atpakaļ</a>";
+        document.body.innerHTML = `
+          <main style="text-align:center;padding:50px">
+            <h2>Raksts nav atrasts 😢</h2>
+            <a class="back" href="/articles">← Atpakaļ uz rakstiem</a>
+          </main>`;
         return;
       }
+
       document.getElementById("article-title").textContent = article.title;
       document.getElementById("article-content").textContent = article.content;
     }
@@ -85,14 +177,13 @@
     if (!view) {
       renderList();
     } else if (view === "create") {
-      main.classList.add("hidden");
+      mainView.classList.add("hidden");
       createView.classList.remove("hidden");
     } else {
-      main.classList.add("hidden");
-      viewArticle.classList.remove("hidden");
+      mainView.classList.add("hidden");
+      articleView.classList.remove("hidden");
       renderArticle(view);
     }
   </script>
-
 </body>
 </html>
