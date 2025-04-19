@@ -68,6 +68,22 @@
       border-radius: 5px;
       margin-top: 30px;
     }
+
+    #generatedLink {
+      margin-top: 20px;
+      padding: 10px;
+      background-color: #e0e0e0;
+      border-radius: 5px;
+    }
+
+    #generatedLink a {
+      color: #0056b3;
+      text-decoration: none;
+    }
+
+    #generatedLink a:hover {
+      text-decoration: underline;
+    }
   </style>
 </head>
 <body>
@@ -91,6 +107,11 @@
     <button onclick="saveCode()">Saglabāt un ģenerēt saiti</button>
 
     <iframe id="output"></iframe>
+
+    <div id="generatedLink" style="display:none;">
+      <h3>Tava saite:</h3>
+      <a id="link" target="_blank"></a>
+    </div>
   </div>
 
   <div id="readonlyMode" style="display: none;">
@@ -132,9 +153,10 @@
 
     localStorage.setItem(`prog_${randomID}`, JSON.stringify(data));
 
-    const newUrl = `${window.location.pathname}?p=${randomID}`;
-    alert("Saglabāts! Atver šo saiti:\n" + window.location.origin + newUrl);
-    window.location.href = newUrl;
+    const generatedLink = `https://ceribas3.github.io/pasakumi/lieldienas-programmesana/programme?p=${randomID}`;
+    document.getElementById("link").href = generatedLink;
+    document.getElementById("link").textContent = generatedLink;
+    document.getElementById("generatedLink").style.display = "block";
   }
 
   function loadReadOnly(id) {
